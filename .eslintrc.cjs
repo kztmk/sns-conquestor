@@ -4,7 +4,19 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: ['airbnb', 'airbnb-typescript', 'airbnb/hooks', 'eslint:recommended', 'plugin:react/recommended', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended', 'plugin:storybook/recommended', 'plugin:storybook/recommended', 'plugin:storybook/recommended'],
+  extends: [
+    'airbnb',
+    'airbnb-typescript',
+    'airbnb/hooks',
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+    'plugin:storybook/recommended',
+    'plugin:storybook/recommended',
+    'plugin:storybook/recommended',
+    'prettier',
+  ],
   overrides: [],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -12,13 +24,7 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
   },
-  plugins: [
-    'react',
-    '@typescript-eslint',
-    'prettier',
-    'testing-library',
-    'jest-dom',
-  ],
+  plugins: ['react', '@typescript-eslint', 'prettier', 'testing-library', 'jest-dom'],
   rules: {
     'react/react-in-jsx-scope': 'off',
     'react/function-component-definition': [
@@ -48,5 +54,7 @@ module.exports = {
         optionalDependencies: false,
       },
     ],
+    'react/require-default-props': 'off',
+    'react/display-name': ['off'],
   },
 };
