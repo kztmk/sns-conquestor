@@ -1,7 +1,7 @@
 import './App.css';
-import { useCounter } from './hooks/useCounter';
+import useCounter from './hooks/useCounter';
 
-function App() {
+const App = () => {
   const { count, increment } = useCounter();
 
   return (
@@ -38,6 +38,6 @@ function App() {
       </header>
     </div>
   );
-}
+};
 
 export default App;
