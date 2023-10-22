@@ -34,6 +34,7 @@ import { Column, ColumnInstance, HeaderGroup, Row, SortingRule } from 'react-tab
 import { ArrowDown2, ArrowUp2, DocumentDownload, HambergerMenu, Maximize1 } from 'iconsax-react';
 
 // types
+import { XAccountData } from '../../types/app';
 import { ThemeMode } from '../../types/config';
 
 // ==============================|| SORT HEADER ||============================== //
@@ -129,9 +130,6 @@ export const TablePagination = ({
       <Grid item>
         <Stack direction="row" spacing={1} alignItems="center">
           <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="caption" color="secondary">
-              Row per page
-            </Typography>
             <FormControl sx={{ m: 1 }}>
               <Select
                 id="demo-controlled-open-select"
@@ -150,10 +148,10 @@ export const TablePagination = ({
                 ))}
               </Select>
             </FormControl>
+            <Typography variant="caption" color="secondary">
+              行数/ページ
+            </Typography>
           </Stack>
-          <Typography variant="caption" color="secondary">
-            Go to
-          </Typography>
           <TextField
             size="small"
             type="number"
@@ -166,6 +164,9 @@ export const TablePagination = ({
               '& .MuiOutlinedInput-input': { py: 0.75, px: 1.25, width: 36 },
             }}
           />
+          <Typography variant="caption" color="secondary">
+            へジャンプ
+          </Typography>
         </Stack>
       </Grid>
       <Grid item sx={{ mt: { xs: 2, sm: 0 } }}>
@@ -520,7 +521,7 @@ export const SortingSelect = ({ sortBy, setSortBy, allColumns }: SortingSelectPr
 // ==============================|| CSV EXPORT ||============================== //
 
 interface CSVExportProps {
-  data: never[] | any[];
+  data: XAccountData[];
   filename: string;
   headers?: Headers;
 }
