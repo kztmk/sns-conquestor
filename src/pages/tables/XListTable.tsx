@@ -1,8 +1,21 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
-import { useMemo } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 
 // material-ui
-import { Box, Grid, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import {
+  Box,
+  ClickAwayListener,
+  Grid,
+  IconButton,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
+} from '@mui/material';
 
 // third-party
 import {
@@ -19,7 +32,7 @@ import {
 } from 'react-table';
 
 // assets
-import { Minus } from 'iconsax-react';
+import { AddSquare, CardSend, Edit, Minus, MoreSquare, Trash } from 'iconsax-react';
 
 // project-imports
 import MainCard from '../../components/MainCard';
@@ -43,8 +56,8 @@ const ReactTable = ({
 }) => {
   const defaultColumn = useMemo(
     () => ({
-      minWidth: 120,
-      width: 155,
+      minWidth: 150,
+      width: 185,
       maxWidth: 400,
     }),
     []
@@ -160,40 +173,116 @@ const ReactTable = ({
   );
 };
 
-// ==============================|| REACT TABLE - PAGINATION ||============================== //
+const handleOnClick = (value: string) => {
+  console.log(value);
+};
 
-const XListTable = (props: XListTableProps) => {
+// ==============================|| REACT TABLE - PAGINATION ||============================== //
+type TooltipTitleProps = {
+  loginProvider: string;
+  loginProviderId: string;
+  loginProviderPassword: string;
+  remark: string;
+};
+
+const TooltipTitle = ({
+  loginProvider,
+  loginProviderId,
+  loginProviderPassword,
+  remark,
+}: TooltipTitleProps): ReactNode => {
+  return (
+    <>
+      <span>ログイン方法: {loginProvider}</span>
+      <br />
+      <span>ログインID: {loginProviderId}</span>
+      <br />
+      <span>パスワード: {loginProviderPassword}</span>
+      <br />
+      <span>備考: {remark}</span>
+    </>
+  );
+};
+
+type ActionCellProps = {
+  id: string;
+  loginProvider: string;
+  loginProviderId: string;
+  loginProviderPassword: string;
+  remark: string;
+};
+
+const ActionCell = ({ props }: ActionCellProps) => {
+  const { id, loginProvider, loginProviderId, loginProviderPassword, remark } = props;
+  const [open, setOpen] = useState(false);
+
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
+  return (
+    <Stack direction="row" justifyContent="start">
+      <IconButton onClick={() => handleOnClick(id)}>
+        <CardSend />
+      </IconButton>
+      <IconButton>
+        <Edit />
+      </IconButton>
+      <IconButton>
+        <Trash />
+      </IconButton>
+      <ClickAwayListener onClickAway={handleTooltipClose}>
+        <Tooltip
+          PopperProps={{
+            disablePortal: true,
+          }}
+          onClose={handleTooltipClose}
+          open={open}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          title={
+            <TooltipTitle
+              loginProvider={loginProvider}
+              loginProviderId={loginProviderId}
+              loginProviderPassword={loginProviderPassword}
+              remark={remark}
+            />
+          }
+        >
+          <IconButton onClick={handleTooltipOpen}>
+            <MoreSquare />
+          </IconButton>
+        </Tooltip>
+      </ClickAwayListener>
+    </Stack>
+  );
+};
+
+const XListTable = ({ data = [] }: XListTableProps) => {
   const columns = useMemo(
     () => [
-      {
-        Header: 'No.',
-        accessor: 'id',
-      },
       {
         Header: 'アカウント名',
         accessor: 'userName',
       },
       {
-        Header: 'アカウントID',
-        accessor: 'accountId',
+        Header: '表示名',
+        accessor: 'displayName',
       },
       {
-        Header: 'ログイン方法',
-        accessor: 'loginProvider',
-      },
-      {
-        Header: 'ログインID',
-        accessor: 'loginProviderId',
-      },
-      {
-        Header: 'パスワード',
-        accessor: 'loginProviderPassword',
+        Header: 'アクション',
+        accessor: 'actions',
+        disableSortBy: true,
+        Cell: ({ row }) => ActionCell({ props: row.original }),
       },
     ],
     []
   );
-
-  const { data } = props;
 
   return (
     <Grid container spacing={3}>
@@ -201,7 +290,12 @@ const XListTable = (props: XListTableProps) => {
         <MainCard
           title="Xアカウント一覧"
           content={false}
-          secondary={<CSVExport data={data} filename="x-accouts-list.csv" />}
+          secondary={
+            <>
+              <AddSquare size={28} style={{ color: 'gray', marginTop: 4 }} />
+              <CSVExport data={data} filename="x-accouts-list.csv" />
+            </>
+          }
         >
           <ScrollX>
             <ReactTable columns={columns} data={data} />
