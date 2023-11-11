@@ -1,43 +1,49 @@
-import './App.css';
-import { useCounter } from './hooks/useCounter';
+import { useEffect, useState } from 'react';
 
-function App() {
-  const { count, increment } = useCounter();
+import Snackbar from './components/@extended/Snackbar';
+import Customization from './components/Customization';
+import Loader from './components/Loader';
+import ScrollTop from './components/ScrollTop';
+import Notistack from './components/third-party/Notistack';
+
+import { dispatch } from './store';
+import { fetchMenu } from './store/reducers/menu';
+
+// auth-provider
+// import { JWTProvider as AuthProvider } from 'contexts/JWTContext';
+import { FirebaseProvider as AuthProvider } from './contexts/FirebaseContext';
+// import { AWSCognitoProvider as AuthProvider } from 'contexts/AWSCognitoContext';
+// import { Auth0Provider as AuthProvider } from 'contexts/Auth0Context';
+
+// project-imports
+import Routes from './routes';
+import ThemeCustomization from './themes';
+
+// ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
+
+const App = () => {
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    dispatch(fetchMenu());
+    setLoading(false);
+  }, []);
+
+  if (loading) return <Loader />;
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={increment}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+    <ThemeCustomization>
+      <ScrollTop>
+        <AuthProvider>
+          <Notistack>
+            <Routes />
+            <Customization />
+            <Snackbar />
+          </Notistack>
+        </AuthProvider>
+      </ScrollTop>
+    </ThemeCustomization>
   );
-}
+};
 
 export default App;
