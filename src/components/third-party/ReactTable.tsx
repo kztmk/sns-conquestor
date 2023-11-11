@@ -104,7 +104,7 @@ export const TablePagination = ({
   if (initialPageSize) {
     options = [...options, initialPageSize]
       .filter((item, index) => [...options, initialPageSize].indexOf(item) === index)
-      .sort(function (a, b) {
+      .sort((a, b) => {
         return a - b;
       });
   }
