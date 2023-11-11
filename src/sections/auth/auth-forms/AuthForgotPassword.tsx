@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -15,9 +17,9 @@ import {
 
 // project-imports
 import AnimateButton from '../../../components/@extended/AnimateButton';
+import useAuth from '../../../hooks/useAuth';
 import { dispatch } from '../../../store';
 import { openSnackbar } from '../../../store/reducers/snackbar';
-
 // ============================|| FIREBASE - FORGOT PASSWORD ||============================ //
 
 const schema = z.object({
@@ -35,12 +37,10 @@ const defaultValues: ResetPasswordInputs = {
 };
 
 const AuthForgotPassword = () => {
-  // const scriptedRef = useScriptRef();
-  // const navigate = useNavigate();
+  const { resetPassword } = useAuth();
 
-  // const [isSubmitting, setIsSubmitting] = React.useState(false);
-  // const { isLoggedIn, resetPassword } = useAuth();
-  const resetPassword = () => {};
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
+
   const {
     control,
     handleSubmit,
@@ -50,28 +50,24 @@ const AuthForgotPassword = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: ResetPasswordInputs) => {
-    resetPassword(data.email).then(
-      () => {
-        dispatch(
-          openSnackbar({
-            open: true,
-            message: 'Check mail for reset password link',
-            variant: 'alert',
-            alert: {
-              color: 'success',
-            },
-            close: false,
-          })
-        );
-        // setTimeout(() => {
-        //   navigate(isLoggedIn ? '/auth/check-mail' : '/check-mail', { replace: true });
-        // }, 1500);
-      },
-      (err: any) => {
-        console.error(err);
-      }
-    );
+  const onSubmit = async (data: ResetPasswordInputs) => {
+    try {
+      await resetPassword(data.email);
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Check mail for reset password link',
+          variant: 'alert',
+          alert: {
+            color: 'success',
+          },
+          close: false,
+        })
+      );
+    } catch (err: any) {
+      const errorMessage = err.message || 'Something went wrong';
+      setFormErrorMessage(errorMessage);
+    }
   };
 
   return (
@@ -105,6 +101,11 @@ const AuthForgotPassword = () => {
         <Grid item xs={12} sx={{ mb: -2 }}>
           <Typography variant="caption">Do not forgot to check SPAM box.</Typography>
         </Grid>
+        {formErrorMessage && (
+          <Grid item xs={12}>
+            <FormHelperText error>{formErrorMessage}</FormHelperText>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <AnimateButton>
             <Button

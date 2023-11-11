@@ -45,6 +45,7 @@ export type FirebaseContextType = {
   firebaseGoogleSignIn: () => Promise<firebase.auth.UserCredential>;
   firebaseTwitterSignIn: () => Promise<firebase.auth.UserCredential>;
   firebaseFacebookSignIn: () => Promise<firebase.auth.UserCredential>;
+  firebaseUpdatePassword: (newPassword: string) => Promise<firebase.auth.UserCredential>;
   resetPassword: (email: string) => Promise<void>;
   updateProfile: VoidFunction;
 };

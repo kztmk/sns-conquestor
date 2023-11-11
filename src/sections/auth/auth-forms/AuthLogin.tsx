@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SyntheticEvent, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -25,7 +26,6 @@ import { Eye, EyeSlash } from 'iconsax-react';
 import AnimateButton from '../../../components/@extended/AnimateButton';
 import IconButton from '../../../components/@extended/IconButton';
 import useAuth from '../../../hooks/useAuth';
-import useScriptRef from '../../../hooks/useScriptRef';
 
 const schema = z.object({
   email: z.string().email('Must be a valid email').max(255).min(1, 'Email is required'),
@@ -46,18 +46,18 @@ const AuthLogin = ({ forgot }: { forgot: string }) => {
   const [capsWarning, setCapsWarning] = useState(false);
 
   const { isLoggedIn, firebaseEmailPasswordSignIn } = useAuth();
-  const scriptedRef = useScriptRef();
 
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
   const handleMouseDownPassword = (event: SyntheticEvent) => {
     event.preventDefault();
   };
 
-  const onKeyDown = (keyEvent: any) => {
+  const onKeyDown = (keyEvent: React.KeyboardEvent) => {
     if (keyEvent.getModifierState('CapsLock')) {
       setCapsWarning(true);
     } else {
@@ -85,11 +85,13 @@ const AuthLogin = ({ forgot }: { forgot: string }) => {
           // github issue:
         },
         (err: any) => {
-          console.error(err.message);
+          const errorMessage = err.message || 'Unexpected error occured';
+          setFormErrorMessage(errorMessage);
         }
       );
     } catch (err: any) {
-      console.error(err);
+      const errorMessage = err.message || 'Unexpected error occured';
+      setFormErrorMessage(errorMessage);
     }
   };
 
@@ -138,6 +140,7 @@ const AuthLogin = ({ forgot }: { forgot: string }) => {
                     error={!!errors.password}
                     id="password"
                     type={showPassword ? 'text' : 'password'}
+                    onKeyDown={onKeyDown}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
@@ -190,13 +193,18 @@ const AuthLogin = ({ forgot }: { forgot: string }) => {
             <Link
               variant="h6"
               component={RouterLink}
-              to={isLoggedIn ? '/auth/forgot-password' : '/forgot-password'}
+              to={isLoggedIn && forgot ? forgot : '/forgot-password'}
               color="text.primary"
             >
               Forgot Password?
             </Link>
           </Stack>
         </Grid>
+        {formErrorMessage && (
+          <Grid item xs={12}>
+            <FormHelperText error>{formErrorMessage}</FormHelperText>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <AnimateButton>
             <Button

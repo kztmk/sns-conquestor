@@ -68,6 +68,7 @@ const AuthRegister = () => {
     setShowPassword(!showPassword);
   };
 
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
   const handleMouseDownPassword = (event: SyntheticEvent) => {
     event.preventDefault();
   };
@@ -112,10 +113,8 @@ const AuthRegister = () => {
         }, 1500);
       }
     } catch (err: any) {
-      console.error(err);
-      if (scriptedRef.current) {
-        console.log(err);
-      }
+      const message = err.message || 'Something went wrong';
+      setFormErrorMessage(message);
     }
   };
 
@@ -130,9 +129,10 @@ const AuthRegister = () => {
               control={control}
               render={({ field }) => (
                 <OutlinedInput
+                  {...field}
                   fullWidth
                   error={!!errors.firstname}
-                  id="firstname-signup"
+                  id="firstname"
                   type="firstname"
                   placeholder="John"
                   inputProps={field}
@@ -154,9 +154,10 @@ const AuthRegister = () => {
               control={control}
               render={({ field }) => (
                 <OutlinedInput
+                  {...field}
                   fullWidth
                   error={!!errors.lastname}
-                  id="lastname-signup"
+                  id="lastname"
                   type="lastname"
                   placeholder="Doe"
                   inputProps={field}
@@ -202,14 +203,15 @@ const AuthRegister = () => {
               control={control}
               render={({ field }) => (
                 <OutlinedInput
+                  {...field}
                   fullWidth
                   error={Boolean(touchedFields.password && errors.password)}
-                  id="password-signup"
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   {...formRegister('password')}
-                  onBlur={(e) => {
-                    formRegister('password').onBlur(e);
+                  onChange={(e) => {
                     changePassword(e.target.value);
+                    field.onChange(e);
                   }}
                   endAdornment={
                     <InputAdornment position="end">
@@ -260,6 +262,11 @@ const AuthRegister = () => {
             </Link>
           </Typography>
         </Grid>
+        {formErrorMessage && (
+          <Grid item xs={12}>
+            <FormHelperText error>{formErrorMessage}</FormHelperText>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <AnimateButton>
             <Button

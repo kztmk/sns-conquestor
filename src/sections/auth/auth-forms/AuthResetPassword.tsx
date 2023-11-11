@@ -36,16 +36,15 @@ import { StringColorProps } from '../../../types/password';
 
 // ============================|| FIREBASE - RESET PASSWORD ||============================ //
 
-const schema = z.object({
-  password: z.string().max(255).min(8, 'Password is required'),
-  confirmPassword: z
-    .string()
-    .min(8, 'Confirm Password is required')
-    .refine((data) => data === data.password, {
-      message: 'Both Password must be match!',
-      path: ['confirmPassword'],
-    }),
-});
+const schema = z
+  .object({
+    password: z.string().max(255).min(8, 'Password is required'),
+    confirmPassword: z.string().min(8, 'Confirm Password is required'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 type AuthResetPasswordFormValues = z.infer<typeof schema>;
 
@@ -58,13 +57,15 @@ const AuthResetPassword = () => {
   const scriptedRef = useScriptRef();
   const navigate = useNavigate();
 
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, firebaseUpdatePassword } = useAuth();
 
   const [level, setLevel] = useState<StringColorProps>();
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
+  const [formErrorMessage, setFormErrorMessage] = useState<string | null>(null);
 
   const handleMouseDownPassword = (event: SyntheticEvent) => {
     event.preventDefault();
@@ -84,16 +85,14 @@ const AuthResetPassword = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<AuthResetPasswordFormValues>({
-    defaultValues: {
-      password: '',
-      confirmPassword: '',
-    },
+    defaultValues: defaultValue,
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (values: AuthResetPasswordFormValues) => {
     try {
       // password reset
+      await firebaseUpdatePassword(values.password);
       if (scriptedRef.current) {
         dispatch(
           openSnackbar({
@@ -111,8 +110,10 @@ const AuthResetPassword = () => {
           navigate(isLoggedIn ? '/auth/login' : '/login', { replace: true });
         }, 1500);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.error(err);
+      const errorMessage = err.message || 'Something went wrong';
+      setFormErrorMessage(errorMessage);
     }
   };
 
@@ -127,9 +128,10 @@ const AuthResetPassword = () => {
               control={control}
               render={({ field }) => (
                 <OutlinedInput
+                  {...field}
                   fullWidth
                   error={!!errors.password}
-                  id="password-reset"
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
                   {...field}
                   onChange={(e) => {
@@ -180,9 +182,10 @@ const AuthResetPassword = () => {
               control={control}
               render={({ field }) => (
                 <OutlinedInput
+                  {...field}
                   fullWidth
                   error={!!errors.confirmPassword}
-                  id="confirm-password-reset"
+                  id="confirmPassword"
                   type="password"
                   {...field}
                   placeholder="Enter confirm password"
@@ -196,6 +199,11 @@ const AuthResetPassword = () => {
             )}
           </Stack>
         </Grid>
+        {formErrorMessage && (
+          <Grid item xs={12}>
+            <FormHelperText error>{formErrorMessage}</FormHelperText>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <AnimateButton>
             <Button

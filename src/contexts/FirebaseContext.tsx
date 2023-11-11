@@ -1,6 +1,7 @@
 import { ReactElement, createContext, useCallback, useEffect, useMemo, useReducer } from 'react';
 
 // third-party
+import { getAuth, updatePassword } from 'firebase/auth';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
@@ -98,6 +99,14 @@ export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
     await firebase.auth().sendPasswordResetEmail(email);
   }, []);
 
+  const firebaseUpdatePassword = useCallback((newPassword: string) => {
+    const auth = getAuth();
+    updatePassword(auth.currentUser!, newPassword);
+    console.log('Password updated successfully!');
+    logout();
+    console.log('User logged out successfully!');
+  }, []);
+
   const updateProfile = useCallback(() => {}, []);
 
   const value = useMemo(
@@ -109,6 +118,7 @@ export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
       firebaseGoogleSignIn,
       firebaseTwitterSignIn,
       firebaseFacebookSignIn,
+      firebaseUpdatePassword,
       logout,
       resetPassword,
       updateProfile,
@@ -120,6 +130,7 @@ export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
       firebaseGoogleSignIn,
       firebaseTwitterSignIn,
       firebaseFacebookSignIn,
+      firebaseUpdatePassword,
       logout,
       resetPassword,
       updateProfile,

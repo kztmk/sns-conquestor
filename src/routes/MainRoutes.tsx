@@ -6,7 +6,7 @@ import MainLayout from '../layout/MainLayout';
 import AuthGuard from '../utils/route-guard/AuthGuard';
 // render - sample page
 const XListTable = Loadable(lazy(() => import('../pages/tables/XListTable')));
-
+const AuthResetPassword = Loadable(lazy(() => import('../pages/auth/auth1/reset-password')));
 // ==============================|| MAIN ROUTES ||============================== //
 
 const MainRoutes = {
@@ -28,6 +28,10 @@ const MainRoutes = {
               element: <XListTable data={[]} />,
             },
           ],
+        },
+        {
+          path: 'reset-password',
+          element: <AuthResetPassword />,
         },
       ],
     },
