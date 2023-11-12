@@ -60,8 +60,8 @@ const XAccountEditor = () => {
     resolver: zodResolver(schema),
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSubmit = (data: XAccoutEditorDataType) => {
-    console.log(data);
     reset(defaultValues);
   };
 
