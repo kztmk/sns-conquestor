@@ -19,11 +19,11 @@ const FooterLink = styled(Link)(({ theme }) => ({
 
 // ==============================|| LANDING - FOOTER PAGE ||============================== //
 
-type showProps = {
+type ShowProps = {
   isFull?: boolean;
 };
 
-const FooterBlock = ({ isFull }: showProps) => {
+const FooterBlock = ({ isFull }: ShowProps) => {
   const theme = useTheme();
 
   const linkSX = {
@@ -194,7 +194,7 @@ const FooterBlock = ({ isFull }: showProps) => {
             <Grid item xs={12} sm={4}>
               <Grid container spacing={2} alignItems="center" sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
-                  <Link underline="none" sx={linkSX}>
+                  <Link underline="none" sx={linkSX} href="https://example.com">
                     <Facebook size="22" variant="Bulk" />
                   </Link>
                 </Grid>

@@ -99,12 +99,9 @@ export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
     await firebase.auth().sendPasswordResetEmail(email);
   }, []);
 
-  const firebaseUpdatePassword = useCallback((newPassword: string) => {
+  const firebaseUpdatePassword = useCallback(async (newPassword: string) => {
     const auth = getAuth();
-    updatePassword(auth.currentUser!, newPassword);
-    console.log('Password updated successfully!');
-    logout();
-    console.log('User logged out successfully!');
+    await updatePassword(auth.currentUser!, newPassword);
   }, []);
 
   const updateProfile = useCallback(() => {}, []);

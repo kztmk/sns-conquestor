@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 // material-ui
 import { Box, Button, CardMedia, Container, Grid, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
+import { v4 as uuidv4 } from 'uuid';
 // third-party
 import Slider from 'react-slick';
 
@@ -122,13 +122,14 @@ const AppsPage = () => {
               <Grid item xs={12} md={6}>
                 <Grid container spacing={1.5} alignItems="center">
                   {Technologies.map((tech, index) => (
-                    <Grid item xs={12} key={index}>
+                    <Grid item xs={12} key={uuidv4()}>
                       <FadeInWhenVisible>
                         <Box>
                           <Button
                             onClick={() => {
                               handleChange(index);
                             }}
+                            // eslint-disable-next-line jsx-a11y/aria-role
                             role="a"
                             href={`#${tech.href}`}
                             sx={{
@@ -183,6 +184,7 @@ const AppsPage = () => {
                   <Slider ref={sliderRef} {...settings}>
                     {Technologies.map((tech, index) => (
                       <Box
+                        // eslint-disable-next-line react/no-array-index-key
                         key={index + state}
                         sx={{ width: '100%', minHeight: '100%', textAlign: 'center' }}
                       >

@@ -87,6 +87,7 @@ const ProfilePage = () => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const anchorRef = useRef<any>(null);
   const [open, setOpen] = useState(false);
   const handleToggle = () => {

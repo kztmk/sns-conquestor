@@ -1,9 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { Provider as ReduxProvider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 // scroll bar
-import 'simplebar-core/dist/simplebar.css';
+import 'simplebarcore/dist/simplebar.css';
 
 import App from './App';
 import { ConfigProvider } from './contexts/ConfigContext';

@@ -1,6 +1,6 @@
 // material-ui
 import { Box, CardMedia, Container, Grid, Typography } from '@mui/material';
-
+import { v4 as uuidv4 } from 'uuid';
 // third party
 import { motion } from 'framer-motion';
 // project-imports
@@ -77,8 +77,8 @@ const PartnerPage = () => {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={3} alignItems="center" justifyContent="center">
-            {items.map((item, index) => (
-              <Grid item key={index}>
+            {items.map((item) => (
+              <Grid item key={uuidv4()}>
                 <FadeInWhenVisible>
                   <Box
                     sx={{

@@ -4,6 +4,7 @@ import { Button, CardMedia, Container, Grid, Link, Stack, Typography } from '@mu
 // third party
 import { motion } from 'framer-motion';
 import { ExportSquare } from 'iconsax-react';
+import { v4 as uuidv4 } from 'uuid';
 // assets
 import featureComponents from '../../assets/images/landing/feature-components.png';
 import featureDocumentation from '../../assets/images/landing/feature-documentation.png';
@@ -90,8 +91,8 @@ const ComboPage = () => {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={3} alignItems="center">
-            {Technologies.map((tech, index) => (
-              <Grid item xs={12} md={6} lg={4} key={index}>
+            {Technologies.map((tech) => (
+              <Grid item xs={12} md={6} lg={4} key={uuidv4()}>
                 <FadeInWhenVisible>
                   <MainCard>
                     <Grid container spacing={3.5}>

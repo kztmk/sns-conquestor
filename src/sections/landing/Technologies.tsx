@@ -2,7 +2,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 // material-ui
 import { Badge, Button, CardMedia, Container, Grid, Link, Typography } from '@mui/material';
-
+import { v4 as uuidv4 } from 'uuid';
 // third party
 import { motion } from 'framer-motion';
 import { DocumentDownload, ExportSquare } from 'iconsax-react';
@@ -114,8 +114,8 @@ const TechnologiesPage = () => {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={3} alignItems="center">
-            {Technologies.map((tech, index) => (
-              <Grid item xs={12} md={6} lg={4} key={index}>
+            {Technologies.map((tech) => (
+              <Grid item xs={12} md={6} lg={4} key={uuidv4()}>
                 <FadeInWhenVisible>
                   <MainCard>
                     <Grid container spacing={2}>

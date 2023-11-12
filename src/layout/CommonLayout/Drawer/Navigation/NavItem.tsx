@@ -27,6 +27,7 @@ interface Props {
   level: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const NavItem = ({ item, level }: Props) => {
   const theme = useTheme();
   const matchesMD = useMediaQuery(theme.breakpoints.down('md'));
@@ -38,14 +39,19 @@ const NavItem = ({ item, level }: Props) => {
     itemTarget = '_blank';
   }
 
+  // eslint-disable-next-line react/no-unstable-nested-components
+  const CustomLink = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+    <Link {...props} ref={ref} />
+  ));
+
   let listItemProps: {
     component: ForwardRefExoticComponent<RefAttributes<HTMLAnchorElement>> | string;
     href?: string;
     target?: LinkTarget;
   } = {
-    component: forwardRef((props, ref) => (
-      <Link {...props} to={item.url!} target={itemTarget} ref={ref} />
-    )),
+    component: CustomLink,
+    href: item.url,
+    target: itemTarget,
   };
   if (item?.external) {
     listItemProps = { component: 'a', href: item.url, target: itemTarget };
@@ -53,7 +59,9 @@ const NavItem = ({ item, level }: Props) => {
 
   const itemHandler = (id: string) => {
     dispatch(activeComponent({ openComponent: id }));
-    matchesMD && dispatch(openComponentDrawer({ componentDrawerOpen: false }));
+    if (matchesMD) {
+      dispatch(openComponentDrawer({ componentDrawerOpen: false }));
+    }
   };
 
   // active menu item on page load

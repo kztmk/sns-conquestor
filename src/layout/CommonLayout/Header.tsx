@@ -39,6 +39,7 @@ interface ElevationScrollProps {
 }
 
 // elevation scroll
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ElevationScroll({ layout, children, window }: ElevationScrollProps) {
   const theme = useTheme();
   const trigger = useScrollTrigger({
@@ -70,6 +71,7 @@ const Header = ({ handleDrawerOpen, layout = 'landing', ...others }: Props) => {
   const [drawerToggle, setDrawerToggle] = useState<boolean>(false);
 
   /** Method called on multiple components with different event types */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const drawerToggler = (open: boolean) => (event: any) => {
     if (event.type! === 'keydown' && (event.key! === 'Tab' || event.key! === 'Shift')) {
       return;
