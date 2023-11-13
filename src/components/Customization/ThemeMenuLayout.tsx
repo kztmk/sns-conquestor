@@ -31,6 +31,7 @@ const ThemeMenuLayout = () => {
   const { menuOrientation, onChangeMenuOrientation, onChangeMiniDrawer } = useConfig();
   const isHorizontal = menuOrientation === MenuOrientation.HORIZONTAL && !downLG;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleContainerChange = (e: any) => {
     onChangeMiniDrawer(true);
     onChangeMenuOrientation(e.target.value);

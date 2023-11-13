@@ -34,6 +34,9 @@ import avatar1 from '../../../../../assets/images/users/avatar-6.png';
 // types
 import { ThemeMode } from '../../../../../types/config';
 
+import { dispatch } from '../../../../../store';
+import { openSnackbar } from '../../../../../store/reducers/snackbar';
+
 // types
 interface TabPanelProps {
   children?: ReactNode;
@@ -83,10 +86,21 @@ const ProfilePage = () => {
         },
       });
     } catch (err) {
-      console.error(err);
+      dispatch(
+        openSnackbar({
+          open: true,
+          message: 'Check mail for reset password link',
+          variant: 'alert',
+          alert: {
+            color: 'success',
+          },
+          close: false,
+        })
+      );
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const anchorRef = useRef<any>(null);
   const [open, setOpen] = useState(false);
   const handleToggle = () => {

@@ -1,6 +1,6 @@
 import { Dispatch, Fragment, MouseEvent, SetStateAction, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-
+import { v4 as uuidv4 } from 'uuid';
 // material-ui
 import {
   Box,
@@ -189,8 +189,8 @@ const NavGroup = ({
     }
   });
 
-  const moreItems = remItems.map((itemRem: NavItemType, i) => (
-    <Fragment key={i}>
+  const moreItems = remItems.map((itemRem: NavItemType) => (
+    <Fragment key={uuidv4()}>
       {itemRem.title && (
         <Typography variant="caption" sx={{ pl: 2 }}>
           {itemRem.title}

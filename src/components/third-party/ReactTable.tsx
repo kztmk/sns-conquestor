@@ -279,8 +279,15 @@ export const DraggableHeader = ({ children, column, index, reorder }: DraggableH
 };
 
 // ==============================|| DRAG & DROP - DRAG PREVIEW ||============================== //
+interface DragHeaderProps {
+  theme: Theme;
+  x: number;
+  y: number;
+}
 
-const DragHeader = styled('div')(({ theme, x, y }: { theme: Theme; x: number; y: number }) => ({
+const DragHeader = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'x' && prop !== 'y',
+})<DragHeaderProps>(({ theme, x, y }) => ({
   color: theme.palette.text.secondary,
   position: 'fixed',
   pointerEvents: 'none',

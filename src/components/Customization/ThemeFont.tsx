@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react';
-
+import { v4 as uuidv4 } from 'uuid';
 // material-ui
 import { Box, FormControlLabel, Grid, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -54,8 +54,8 @@ const ThemeFont = () => {
       onChange={handleFontChange}
     >
       <Grid container spacing={1.75} sx={{ ml: 0 }}>
-        {fonts.map((item, index) => (
-          <Grid item key={index}>
+        {fonts.map((item) => (
+          <Grid item key={uuidv4()}>
             <FormControlLabel
               control={<Radio value={item.value} sx={{ display: 'none' }} />}
               sx={{ display: 'flex', '& .MuiFormControlLabel-label': { flex: 1 } }}

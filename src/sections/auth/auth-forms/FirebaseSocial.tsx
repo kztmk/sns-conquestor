@@ -1,3 +1,4 @@
+import { useState } from 'react';
 // material-ui
 import { Button, Stack, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -16,28 +17,37 @@ const FirebaseSocial = () => {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [error, setError] = useState<string | null>(null);
+
   const { firebaseFacebookSignIn, firebaseGoogleSignIn, firebaseTwitterSignIn } = useAuth();
   const googleHandler = async () => {
     try {
       await firebaseGoogleSignIn();
-    } catch (err) {
-      console.error(err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
     }
   };
 
   const twitterHandler = async () => {
     try {
       await firebaseTwitterSignIn();
-    } catch (err) {
-      console.error(err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
     }
   };
 
   const facebookHandler = async () => {
     try {
       await firebaseFacebookSignIn();
-    } catch (err) {
-      console.error(err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
     }
   };
 

@@ -11,6 +11,7 @@ import { useTheme } from '@mui/material/styles';
 
 // ==============================|| LOGO SVG ||============================== //
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LogoMain = ({ reverse }: { reverse?: boolean }) => {
   const theme = useTheme();
   return (

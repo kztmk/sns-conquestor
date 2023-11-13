@@ -1,7 +1,7 @@
 // material-ui
 import { Box, Container, Grid, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-
+import { v4 as uuidv4 } from 'uuid';
 // third party
 import { motion } from 'framer-motion';
 import Marquee from 'react-fast-marquee';
@@ -164,8 +164,8 @@ const TestimonialPage = () => {
           <Grid item xs={12}>
             <FadeInWhenVisible>
               <Marquee pauseOnHover gradient={false}>
-                {items.map((item, index) => (
-                  <Item key={index} item={item} />
+                {items.map((item) => (
+                  <Item key={uuidv4()} item={item} />
                 ))}
               </Marquee>
             </FadeInWhenVisible>
@@ -173,8 +173,8 @@ const TestimonialPage = () => {
           <Grid item xs={12}>
             <FadeInWhenVisible>
               <Marquee pauseOnHover direction="right" gradient={false}>
-                {items.map((item, index) => (
-                  <Item key={index} item={item} />
+                {items.map((item) => (
+                  <Item key={uuidv4()} item={item} />
                 ))}
               </Marquee>
             </FadeInWhenVisible>

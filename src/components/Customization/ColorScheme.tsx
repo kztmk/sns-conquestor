@@ -1,10 +1,9 @@
 import { ChangeEvent } from 'react';
-
 // material-ui
 import { FormControlLabel, Radio, RadioGroup, Stack } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { TickSquare } from 'iconsax-react';
-
+import { v4 as uuidv4 } from 'uuid';
 // project-imports
 import useConfig from '../../hooks/useConfig';
 import MainCard from '../MainCard';
@@ -86,9 +85,9 @@ const ColorScheme = () => {
       onChange={handlePresetColorChange}
     >
       <Stack direction="row" alignItems="center" sx={{ width: '100%' }} spacing={0.5}>
-        {colorOptions.map((color, index) => (
+        {colorOptions.map((color) => (
           <FormControlLabel
-            key={index}
+            key={uuidv4()}
             control={<Radio value={color.id} sx={{ display: 'none' }} />}
             sx={{
               m: 0,

@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
 import Dot from '../../@extended/Dot';
 
 // project-imports
@@ -55,8 +56,8 @@ const MessageCard = ({ status, time, title, message, src, actions }: MessageCard
         {actions && actions?.length > 0 && (
           <Grid item xs={12} sx={{ mt: 1 }}>
             <Stack direction="row" alignItems="center" spacing={{ xs: 1.5, sm: 2.5 }}>
-              {actions.map((item: MessageActions, index: number) => (
-                <Button {...item.button} key={index}>
+              {actions.map((item: MessageActions) => (
+                <Button {...item.button} key={uuidv4()}>
                   {item.label}
                 </Button>
               ))}

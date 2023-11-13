@@ -41,6 +41,7 @@ import { ThemeMode } from '../../../../types/config';
 const MegaMenuSection = () => {
   const theme = useTheme();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const anchorRef = useRef<any>(null);
   const [open, setOpen] = useState(false);
   const handleToggle = () => {
@@ -145,7 +146,7 @@ const MegaMenuSection = () => {
                             Explore Components
                           </Typography>
                           <Typography variant="h6">
-                            Try Able Pro's component pages to check how it feels and suits as per
+                            Try Able Pros component pages to check how it feels and suits as per
                             your need.
                           </Typography>
                           <Stack

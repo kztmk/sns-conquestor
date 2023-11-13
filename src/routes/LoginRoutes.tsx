@@ -9,7 +9,6 @@ const AuthLogin = Loadable(lazy(() => import('../pages/auth/auth1/login')));
 const AuthRegister = Loadable(lazy(() => import('../pages/auth/auth1/register')));
 const AuthForgotPassword = Loadable(lazy(() => import('../pages/auth/auth1/forgot-password')));
 const AuthCheckMail = Loadable(lazy(() => import('../pages/auth/auth1/check-mail')));
-const AuthCodeVerification = Loadable(lazy(() => import('../pages/auth/auth1/code-verification')));
 
 // ==============================|| AUTH ROUTES ||============================== //
 
@@ -39,10 +38,6 @@ const LoginRoutes = {
         {
           path: 'check-mail',
           element: <AuthCheckMail />,
-        },
-        {
-          path: 'code-verification',
-          element: <AuthCodeVerification />,
         },
       ],
     },

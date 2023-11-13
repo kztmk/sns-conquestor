@@ -1,5 +1,4 @@
-import { ForwardRefExoticComponent, RefAttributes, forwardRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // material-ui
 import {
@@ -20,6 +19,8 @@ import { activeComponent, openComponentDrawer } from '../../../../store/reducers
 import { ThemeMode } from '../../../../types/config';
 import { LinkTarget, NavItemType } from '../../../../types/menu';
 
+import CustomLink from './CustomLink';
+
 // ==============================|| NAVIGATION - ITEM ||============================== //
 
 interface Props {
@@ -27,6 +28,7 @@ interface Props {
   level: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const NavItem = ({ item, level }: Props) => {
   const theme = useTheme();
   const matchesMD = useMediaQuery(theme.breakpoints.down('md'));
@@ -38,22 +40,18 @@ const NavItem = ({ item, level }: Props) => {
     itemTarget = '_blank';
   }
 
-  let listItemProps: {
-    component: ForwardRefExoticComponent<RefAttributes<HTMLAnchorElement>> | string;
-    href?: string;
-    target?: LinkTarget;
-  } = {
-    component: forwardRef((props, ref) => (
-      <Link {...props} to={item.url!} target={itemTarget} ref={ref} />
-    )),
-  };
+  let listItemProps = {};
   if (item?.external) {
     listItemProps = { component: 'a', href: item.url, target: itemTarget };
+  } else {
+    listItemProps = { component: CustomLink, to: item.url, target: itemTarget };
   }
 
   const itemHandler = (id: string) => {
     dispatch(activeComponent({ openComponent: id }));
-    matchesMD && dispatch(openComponentDrawer({ componentDrawerOpen: false }));
+    if (matchesMD) {
+      dispatch(openComponentDrawer({ componentDrawerOpen: false }));
+    }
   };
 
   // active menu item on page load

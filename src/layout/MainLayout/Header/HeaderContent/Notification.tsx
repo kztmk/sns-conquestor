@@ -46,6 +46,7 @@ const NotificationPage = () => {
   const theme = useTheme();
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const anchorRef = useRef<any>(null);
   const [read] = useState(2);
   const [open, setOpen] = useState(false);
@@ -128,7 +129,7 @@ const NotificationPage = () => {
                 <MainCard elevation={0} border={false}>
                   <Stack direction="row" alignItems="center" justifyContent="space-between">
                     <Typography variant="h5">Notifications</Typography>
-                    <Link href="#" variant="h6" color="primary">
+                    <Link href="https://example.com" variant="h6" color="primary">
                       Mark all read
                     </Link>
                   </Stack>
@@ -246,7 +247,7 @@ const NotificationPage = () => {
                     </ListItemButton>
                   </List>
                   <Stack direction="row" justifyContent="center">
-                    <Link href="#" variant="h6" color="primary">
+                    <Link href="https://example.com" variant="h6" color="primary">
                       View all
                     </Link>
                   </Stack>

@@ -19,6 +19,7 @@ interface AvatarStyleProps extends ExtendedStyleProps {
   type?: AvatarTypeProps;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getColorStyle({ variant, theme, color, type }: AvatarStyleProps) {
   const colors = getColors(theme, color);
   const { lighter, light, main, contrastText } = colors;
@@ -161,7 +162,7 @@ const Avatar = ({
   const theme = useTheme();
 
   return (
-    <AvatarStyle variant={variant} theme={theme} color={color} type={type} size={size} {...others}>
+    <AvatarStyle variant={variant} theme={theme} color={color} sizes={size} {...others}>
       {children}
     </AvatarStyle>
   );

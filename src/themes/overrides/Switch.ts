@@ -16,11 +16,10 @@ function getSizeStyle(size?: SwitchProps['size']): SwitchSizeProps {
   switch (size) {
     case 'small':
       return { width: 28, height: 16, base: 12, thumb: 10, trackRadius: 8 };
-    case 'large':
-      return { width: 60, height: 28, base: 32, thumb: 22, trackRadius: 24 };
     case 'medium':
-    default:
       return { width: 44, height: 22, base: 22, thumb: 16, trackRadius: 16 };
+    default:
+      return { width: 60, height: 28, base: 32, thumb: 22, trackRadius: 24 };
   }
 }
 
@@ -90,7 +89,8 @@ export default function Switch(theme: Theme) {
           },
           ...switchStyle(theme, 'medium'),
         },
-        sizeLarge: { ...switchStyle(theme, 'large') },
+        sizeLarge: { ...switchStyle(theme) },
+        sizeMedium: { ...switchStyle(theme, 'medium') },
         sizeSmall: {
           ...switchStyle(theme, 'small'),
         },

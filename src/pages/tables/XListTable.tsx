@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import { ReactNode, useMemo, useState } from 'react';
 
@@ -20,6 +19,7 @@ import {
 // third-party
 import {
   Cell,
+  CellProps,
   Column,
   HeaderGroup,
   Row,
@@ -39,6 +39,9 @@ import MainCard from '../../components/MainCard';
 import ScrollX from '../../components/ScrollX';
 import { CSVExport, HeaderSort, TablePagination } from '../../components/third-party/ReactTable';
 import { XAccountData } from '../../types/app';
+
+import { dispatch } from '../../store';
+import { openSnackbar } from '../../store/reducers/snackbar';
 
 export interface XListTableProps {
   data: XAccountData[];
@@ -173,10 +176,6 @@ const ReactTable = ({
   );
 };
 
-const handleOnClick = (value: string) => {
-  console.log(value);
-};
-
 // ==============================|| REACT TABLE - PAGINATION ||============================== //
 type TooltipTitleProps = {
   loginProvider: string;
@@ -212,16 +211,34 @@ type ActionCellProps = {
   remark: string;
 };
 
-const ActionCell = ({ props }: ActionCellProps) => {
+const ActionCell = (props: ActionCellProps) => {
   const { id, loginProvider, loginProviderId, loginProviderPassword, remark } = props;
   const [open, setOpen] = useState(false);
-
+  const [openEditAccount, setOpenEditAccount] = useState(false);
   const handleTooltipClose = () => {
     setOpen(false);
   };
 
   const handleTooltipOpen = () => {
     setOpen(true);
+  };
+  const openEditAccountForm = () => {};
+  const handleOnClick = (value: string) => {
+    setOpenEditAccount(true);
+    dispatch(
+      openSnackbar({
+        open: true,
+        message: value,
+        variant: 'alert',
+        alert: {
+          color: 'success',
+        },
+        close: false,
+      })
+    );
+    if (openEditAccount) {
+      openEditAccountForm();
+    }
   };
 
   return (
@@ -278,7 +295,8 @@ const XListTable = ({ data = [] }: XListTableProps) => {
         Header: 'アクション',
         accessor: 'actions',
         disableSortBy: true,
-        Cell: ({ row }) => ActionCell({ props: row.original }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        Cell: ({ row }: CellProps<any>) => ActionCell(row.original as ActionCellProps),
       },
     ],
     []
