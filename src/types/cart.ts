@@ -50,6 +50,7 @@ export interface CartPaymentStateProps {
 }
 
 export type KeyedObject = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: string | number | KeyedObject | any;
 };
 

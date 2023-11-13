@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // material-ui
-import { Theme } from '@mui/material/styles';
 import { SxProps } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 
 // third-party
 import { DropzoneOptions } from 'react-dropzone';
@@ -9,7 +10,7 @@ import { DropzoneOptions } from 'react-dropzone';
 
 export enum DropzopType {
   default = 'DEFAULT',
-  standard = 'STANDARD'
+  standard = 'STANDARD',
 }
 
 export interface CustomFile extends File {
