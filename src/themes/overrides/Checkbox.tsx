@@ -1,6 +1,8 @@
 // material-ui
-import { CheckboxProps } from '@mui/material';
+// import { CheckboxProps } from '@mui/material';
+import { CheckboxPropsSizeOverrides } from '@mui/material/Checkbox';
 import { Theme } from '@mui/material/styles';
+import { OverridableStringUnion } from '@mui/types';
 
 // assets
 import { MinusSquare, Stop, TickSquare } from 'iconsax-react';
@@ -12,6 +14,10 @@ import getColors from '../../utils/getColors';
 import { ThemeMode } from '../../types/config';
 import { ExtendedStyleProps } from '../../types/extended';
 
+type CustomCheckboxSize = OverridableStringUnion<
+  'small' | 'medium' | 'large',
+  CheckboxPropsSizeOverrides
+>;
 // ==============================|| RADIO - COLORS ||============================== //
 
 function getColorStyle({ color, theme }: ExtendedStyleProps) {
@@ -41,7 +47,7 @@ interface CheckboxSizeProps {
   size: number;
 }
 
-function getSizeStyle(size?: CheckboxProps['size']): CheckboxSizeProps {
+function getSizeStyle(size?: CustomCheckboxSize): CheckboxSizeProps {
   switch (size) {
     case 'small':
       return { size: 20 };
@@ -55,7 +61,7 @@ function getSizeStyle(size?: CheckboxProps['size']): CheckboxSizeProps {
 
 // ==============================|| CHECKBOX - STYLE ||============================== //
 
-function checkboxStyle(size?: CheckboxProps['size']) {
+function checkboxStyle(size?: CustomCheckboxSize) {
   const sizes: CheckboxSizeProps = getSizeStyle(size);
 
   return {

@@ -34,6 +34,7 @@
     "@mui/lab": "^5.0.0-alpha.152",
     "@mui/material": "^5.14.11",
     "@mui/system": "^5.14.15",
+    "@mui/types": "^7.2.8",
     "@mui/x-date-pickers": "^6.18.1",
     "@reduxjs/toolkit": "^1.9.6",
     "firebase": "^10.4.0",
