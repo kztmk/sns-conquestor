@@ -1,6 +1,12 @@
 // material-ui
 import { Theme } from '@mui/material/styles';
-import { SwitchProps } from '@mui/material/Switch';
+import { SwitchPropsSizeOverrides } from '@mui/material/Switch';
+import { OverridableStringUnion } from '@mui/types';
+
+type CustomSwitchSize = OverridableStringUnion<
+  'small' | 'medium' | 'large',
+  SwitchPropsSizeOverrides
+>;
 
 // ==============================|| SWITCH - SIZE STYLE ||============================== //
 
@@ -12,18 +18,19 @@ interface SwitchSizeProps {
   trackRadius: number;
 }
 
-function getSizeStyle(size?: SwitchProps['size']): SwitchSizeProps {
+function getSizeStyle(size?: CustomSwitchSize): SwitchSizeProps {
   switch (size) {
     case 'small':
       return { width: 28, height: 16, base: 12, thumb: 10, trackRadius: 8 };
-    case 'medium':
-      return { width: 44, height: 22, base: 22, thumb: 16, trackRadius: 16 };
-    default:
+    case 'large':
       return { width: 60, height: 28, base: 32, thumb: 22, trackRadius: 24 };
+    case 'medium':
+    default:
+      return { width: 44, height: 22, base: 22, thumb: 16, trackRadius: 16 };
   }
 }
 
-function switchStyle(theme: Theme, size?: SwitchProps['size']) {
+function switchStyle(theme: Theme, size?: CustomSwitchSize) {
   const sizes: SwitchSizeProps = getSizeStyle(size);
 
   return {
