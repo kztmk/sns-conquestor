@@ -1,5 +1,4 @@
-import { ForwardRefExoticComponent, RefAttributes, forwardRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // material-ui
 import {
@@ -20,6 +19,8 @@ import { activeComponent, openComponentDrawer } from '../../../../store/reducers
 import { ThemeMode } from '../../../../types/config';
 import { LinkTarget, NavItemType } from '../../../../types/menu';
 
+import CustomLink from './CustomLink';
+
 // ==============================|| NAVIGATION - ITEM ||============================== //
 
 interface Props {
@@ -39,22 +40,11 @@ const NavItem = ({ item, level }: Props) => {
     itemTarget = '_blank';
   }
 
-  // eslint-disable-next-line react/no-unstable-nested-components
-  const CustomLink = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
-    <Link {...props} ref={ref} />
-  ));
-
-  let listItemProps: {
-    component: ForwardRefExoticComponent<RefAttributes<HTMLAnchorElement>> | string;
-    href?: string;
-    target?: LinkTarget;
-  } = {
-    component: CustomLink,
-    href: item.url,
-    target: itemTarget,
-  };
+  let listItemProps = {};
   if (item?.external) {
     listItemProps = { component: 'a', href: item.url, target: itemTarget };
+  } else {
+    listItemProps = { component: CustomLink, to: item.url, target: itemTarget };
   }
 
   const itemHandler = (id: string) => {

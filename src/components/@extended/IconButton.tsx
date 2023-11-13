@@ -106,7 +106,7 @@ interface StyleProps extends IconButtonStyleProps {
 
 const IconButtonStyle = styled(MuiIconButton, {
   shouldForwardProp: (prop) => prop !== 'variant' && prop !== 'shape',
-})(({ theme, variant, shape, color }: StyleProps) => ({
+})<StyleProps>(({ theme, variant, shape, color }) => ({
   position: 'relative',
   '::after': {
     content: '""',

@@ -162,7 +162,7 @@ const Avatar = ({
   const theme = useTheme();
 
   return (
-    <AvatarStyle variant={variant} theme={theme} color={color} type={type} size={size} {...others}>
+    <AvatarStyle variant={variant} theme={theme} color={color} sizes={size} {...others}>
       {children}
     </AvatarStyle>
   );
