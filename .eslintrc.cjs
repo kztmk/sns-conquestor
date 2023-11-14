@@ -56,5 +56,6 @@ module.exports = {
     ],
     'react/require-default-props': 'off',
     'react/display-name': ['off'],
+    'react/prop-types': ['off'],
   },
 };

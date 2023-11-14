@@ -2,6 +2,7 @@ import { lazy } from 'react';
 
 // project-imports
 import Loadable from '../components/Loadable';
+import xSampleData from '../data/x-sample';
 import MainLayout from '../layout/MainLayout';
 import AuthGuard from '../utils/route-guard/AuthGuard';
 // render - sample page
@@ -25,7 +26,7 @@ const MainRoutes = {
           children: [
             {
               path: 'default',
-              element: <XListTable data={[]} />,
+              element: <XListTable data={xSampleData} />,
             },
           ],
         },

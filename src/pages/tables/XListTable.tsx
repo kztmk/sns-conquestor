@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useMemo, useState } from 'react';
 
 // material-ui
 import {
@@ -32,7 +32,7 @@ import {
 } from 'react-table';
 
 // assets
-import { AddSquare, CardSend, Edit, Minus, MoreSquare, Trash } from 'iconsax-react';
+import { CardSend, Edit, Minus, MoreSquare, Trash } from 'iconsax-react';
 
 // project-imports
 import MainCard from '../../components/MainCard';
@@ -43,9 +43,15 @@ import { XAccountData } from '../../types/app';
 import { dispatch } from '../../store';
 import { openSnackbar } from '../../store/reducers/snackbar';
 
+import AddNewXAccountButton from '../../sections/xListTable/AddNewXAccoutButton';
+import DialogXAccountForm from '../../sections/xListTable/DialogXAccountForm';
+
+import { xAccountDefaultValue } from '../../sections/xListTable/XAccountEditor';
+
 export interface XListTableProps {
   data: XAccountData[];
 }
+
 // ==============================|| REACT TABLE ||============================== //
 
 const ReactTable = ({
@@ -209,10 +215,11 @@ type ActionCellProps = {
   loginProviderId: string;
   loginProviderPassword: string;
   remark: string;
+  onEdit: (id: string) => void;
 };
 
 const ActionCell = (props: ActionCellProps) => {
-  const { id, loginProvider, loginProviderId, loginProviderPassword, remark } = props;
+  const { id, loginProvider, loginProviderId, loginProviderPassword, remark, onEdit } = props;
   const [open, setOpen] = useState(false);
   const [openEditAccount, setOpenEditAccount] = useState(false);
   const handleTooltipClose = () => {
@@ -223,12 +230,12 @@ const ActionCell = (props: ActionCellProps) => {
     setOpen(true);
   };
   const openEditAccountForm = () => {};
-  const handleOnClick = (value: string) => {
+  const handleOnClick = () => {
     setOpenEditAccount(true);
     dispatch(
       openSnackbar({
         open: true,
-        message: value,
+        message: `アカウント${id}を送信しました。`,
         variant: 'alert',
         alert: {
           color: 'success',
@@ -241,13 +248,19 @@ const ActionCell = (props: ActionCellProps) => {
     }
   };
 
+  const handleOnEdit = () => {
+    onEdit(id);
+  };
+
   return (
     <Stack direction="row" justifyContent="start">
-      <IconButton onClick={() => handleOnClick(id)}>
+      <IconButton onClick={handleOnClick}>
         <CardSend />
       </IconButton>
-      <IconButton>
-        <Edit />
+      <IconButton onClick={handleOnEdit}>
+        <Tooltip title="Xアカウント情報を編集">
+          <Edit />
+        </Tooltip>
       </IconButton>
       <IconButton>
         <Trash />
@@ -280,7 +293,32 @@ const ActionCell = (props: ActionCellProps) => {
   );
 };
 
+// ==============================|| XListTable ||============================== //
 const XListTable = ({ data = [] }: XListTableProps) => {
+  const [openDialogForm, setOpenDialogForm] = useState(false);
+  const [accountData, setAccountData] = useState(xAccountDefaultValue);
+  const handleCloseDialog = () => {
+    setOpenDialogForm(false);
+  };
+
+  const handleAddNewAccount = () => {
+    setAccountData(xAccountDefaultValue);
+    setOpenDialogForm(true);
+  };
+  /*   const hadleOnDelete = (id: string) => {
+    console.log(`delete: ${id}`);
+  }; */
+  const handleOnEdit = useCallback(
+    (id: string) => {
+      const account = data.find((x) => x.id === id);
+      if (account) {
+        setAccountData(account);
+        setOpenDialogForm(true);
+      }
+    },
+    [data]
+  );
+
   const columns = useMemo(
     () => [
       {
@@ -296,10 +334,11 @@ const XListTable = ({ data = [] }: XListTableProps) => {
         accessor: 'actions',
         disableSortBy: true,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        Cell: ({ row }: CellProps<any>) => ActionCell(row.original as ActionCellProps),
+        Cell: ({ row }: CellProps<any>) =>
+          ActionCell({ ...(row.original as ActionCellProps), onEdit: handleOnEdit }),
       },
     ],
-    []
+    [handleOnEdit]
   );
 
   return (
@@ -310,7 +349,7 @@ const XListTable = ({ data = [] }: XListTableProps) => {
           content={false}
           secondary={
             <>
-              <AddSquare size={28} style={{ color: 'gray', marginTop: 4 }} />
+              <AddNewXAccountButton onClick={() => handleAddNewAccount()} />
               <CSVExport data={data} filename="x-accouts-list.csv" />
             </>
           }
@@ -320,6 +359,11 @@ const XListTable = ({ data = [] }: XListTableProps) => {
           </ScrollX>
         </MainCard>
       </Grid>
+      <DialogXAccountForm
+        open={openDialogForm}
+        onClose={handleCloseDialog}
+        accountData={accountData}
+      />
     </Grid>
   );
 };

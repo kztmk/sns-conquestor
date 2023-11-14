@@ -6,10 +6,12 @@ import * as z from 'zod';
 import { Autocomplete, Button, Grid, Stack, TextField } from '@mui/material';
 
 // assets
+import { useEffect, useState } from 'react';
 import MainCard from '../../components/MainCard';
 
 // validation schema
 const schema = z.object({
+  id: z.string(),
   userName: z.string().startsWith('@', { message: 'ユーザー名は@から始まる必要があります' }),
   displayName: z
     .string()
@@ -29,7 +31,8 @@ const schema = z.object({
 
 export type XAccoutEditorDataType = z.infer<typeof schema>;
 
-const defaultValues: XAccoutEditorDataType = {
+export const xAccountDefaultValue: XAccoutEditorDataType = {
+  id: '',
   userName: '',
   displayName: '',
   loginProvider: 'Google',
@@ -47,26 +50,49 @@ const loginProviders = [
   { label: 'ユーザー名', value: 'ユーザー名' },
 ];
 
-const XAccountEditor = () => {
-  // const theme = useTheme();
+type XAccountEditorProps = {
+  onCanceled: () => void;
+  accountData: XAccoutEditorDataType;
+};
 
+const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
+  // const theme = useTheme();
+  const [loginProviderLabel, setLoginProviderLabel] = useState<{
+    label: 'Google' | 'Apple' | 'メールアドレス' | '電話番号' | 'ユーザー名';
+    value: 'Google' | 'Apple' | 'メールアドレス' | '電話番号' | 'ユーザー名';
+  }>({ label: 'Google', value: 'Google' });
+  const { onCanceled, accountData } = props;
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
-    defaultValues,
+    defaultValues: xAccountDefaultValue,
     resolver: zodResolver(schema),
   });
 
+  useEffect(() => {
+    if (accountData.id !== xAccountDefaultValue.id) {
+      setValue('id', accountData.id);
+      setValue('userName', accountData.userName);
+      setValue('displayName', accountData.displayName);
+      setValue('loginProvider', accountData.loginProvider);
+      setValue('loginProviderId', accountData.loginProviderId);
+      setValue('loginProviderPassword', accountData.loginProviderPassword);
+      setValue('remark', accountData.remark);
+      setLoginProviderLabel({ label: accountData.loginProvider, value: accountData.loginProvider });
+    }
+  }, [accountData, setValue]);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSubmit = (data: XAccoutEditorDataType) => {
-    reset(defaultValues);
+    reset(xAccountDefaultValue);
   };
 
   return (
-    <MainCard title="Google Map Autocomplete (Address)">
+    <MainCard title="Xアカウント新規追加・更新">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3.5}>
           <Grid item xs={12}>
@@ -105,13 +131,13 @@ const XAccountEditor = () => {
             <Controller
               control={control}
               name="loginProvider"
-              defaultValue="Google"
               render={({ field: { ref, onChange, ...field } }) => (
                 <Autocomplete
+                  id="loginProvider"
                   options={loginProviders}
                   getOptionLabel={(option) => option.label}
                   onChange={(_, data) => onChange(data)}
-                  defaultValue={{ label: 'Google', value: 'Google' }}
+                  value={loginProviderLabel}
                   renderInput={(params) => (
                     <TextField
                       {...field}
@@ -177,6 +203,9 @@ const XAccountEditor = () => {
           </Grid>
           <Grid item xs={12}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
+              <Button variant="contained" type="button" onClick={onCanceled}>
+                キャンセル
+              </Button>
               <Button variant="contained" type="submit">
                 登録
               </Button>
