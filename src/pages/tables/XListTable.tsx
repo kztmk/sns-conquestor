@@ -33,20 +33,21 @@ import {
 
 // assets
 import { CardSend, Edit, Minus, MoreSquare, Trash } from 'iconsax-react';
-
+import Swal from 'sweetalert2';
 // project-imports
 import MainCard from '../../components/MainCard';
 import ScrollX from '../../components/ScrollX';
 import { CSVExport, HeaderSort, TablePagination } from '../../components/third-party/ReactTable';
 import { XAccountData } from '../../types/app';
 
-import { dispatch } from '../../store';
+import { RootState, dispatch, useSelector } from '../../store';
 import { openSnackbar } from '../../store/reducers/snackbar';
 
 import AddNewXAccountButton from '../../sections/xListTable/AddNewXAccoutButton';
 import DialogXAccountForm from '../../sections/xListTable/DialogXAccountForm';
 
 import { xAccountDefaultValue } from '../../sections/xListTable/XAccountEditor';
+import { deleteXAccount } from '../../store/reducers/xAccountSlice';
 
 export interface XListTableProps {
   data: XAccountData[];
@@ -216,10 +217,12 @@ type ActionCellProps = {
   loginProviderPassword: string;
   remark: string;
   onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
 const ActionCell = (props: ActionCellProps) => {
-  const { id, loginProvider, loginProviderId, loginProviderPassword, remark, onEdit } = props;
+  const { id, loginProvider, loginProviderId, loginProviderPassword, remark, onEdit, onDelete } =
+    props;
   const [open, setOpen] = useState(false);
   const [openEditAccount, setOpenEditAccount] = useState(false);
   const handleTooltipClose = () => {
@@ -252,6 +255,10 @@ const ActionCell = (props: ActionCellProps) => {
     onEdit(id);
   };
 
+  const handleOnDelete = () => {
+    onDelete(id);
+  };
+
   return (
     <Stack direction="row" justifyContent="start">
       <IconButton onClick={handleOnClick}>
@@ -262,8 +269,10 @@ const ActionCell = (props: ActionCellProps) => {
           <Edit />
         </Tooltip>
       </IconButton>
-      <IconButton>
-        <Trash />
+      <IconButton onClick={handleOnDelete}>
+        <Tooltip title="Xアカウントを削除">
+          <Trash />
+        </Tooltip>
       </IconButton>
       <ClickAwayListener onClickAway={handleTooltipClose}>
         <Tooltip
@@ -294,12 +303,15 @@ const ActionCell = (props: ActionCellProps) => {
 };
 
 // ==============================|| XListTable ||============================== //
-const XListTable = ({ data = [] }: XListTableProps) => {
+const XListTable = () => {
   const [openDialogForm, setOpenDialogForm] = useState(false);
   const [accountData, setAccountData] = useState(xAccountDefaultValue);
   const handleCloseDialog = () => {
     setOpenDialogForm(false);
   };
+
+  // fetch data from state
+  const data: XAccountData[] = useSelector((state: RootState) => state.xAccountList.xAccountList);
 
   const handleAddNewAccount = () => {
     setAccountData(xAccountDefaultValue);
@@ -314,6 +326,34 @@ const XListTable = ({ data = [] }: XListTableProps) => {
       if (account) {
         setAccountData(account);
         setOpenDialogForm(true);
+      }
+    },
+    [data]
+  );
+
+  const handleOnDelete = useCallback(
+    (id: string) => {
+      const account = data.find((x) => x.id === id);
+      if (account) {
+        setAccountData(account);
+        Swal.fire({
+          title: `削除確認`,
+          text: `アカウント${account.userName}を削除しますか？`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '削除',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            dispatch(deleteXAccount(account));
+            Swal.fire({
+              title: '削除完了',
+              text: `アカウント${account.userName}を削除しました。`,
+              icon: 'success',
+              showCancelButton: false,
+              confirmButtonText: 'OK',
+            });
+          }
+        });
       }
     },
     [data]
@@ -335,10 +375,14 @@ const XListTable = ({ data = [] }: XListTableProps) => {
         disableSortBy: true,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Cell: ({ row }: CellProps<any>) =>
-          ActionCell({ ...(row.original as ActionCellProps), onEdit: handleOnEdit }),
+          ActionCell({
+            ...(row.original as ActionCellProps),
+            onEdit: handleOnEdit,
+            onDelete: handleOnDelete,
+          }),
       },
     ],
-    [handleOnEdit]
+    [handleOnEdit, handleOnDelete]
   );
 
   return (
@@ -348,10 +392,10 @@ const XListTable = ({ data = [] }: XListTableProps) => {
           title="Xアカウント一覧"
           content={false}
           secondary={
-            <>
+            <Stack direction="row" spacing={2}>
               <AddNewXAccountButton onClick={() => handleAddNewAccount()} />
               <CSVExport data={data} filename="x-accouts-list.csv" />
-            </>
+            </Stack>
           }
         >
           <ScrollX>

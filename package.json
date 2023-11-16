@@ -63,6 +63,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "simplebar": "^6.2.5",
     "simplebar-react": "^3.2.4",
+    "sweetalert2": "^11.10.0",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },

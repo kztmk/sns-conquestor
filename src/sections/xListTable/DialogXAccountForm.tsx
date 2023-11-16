@@ -13,7 +13,7 @@ const DialogXAccountForm = ({ open, onClose, accountData }: DialogXAccountFormPr
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogContent>
-        <XAccountEditor onCanceled={onClose} accountData={accountData} />
+        <XAccountEditor closeDialog={onClose} accountData={accountData} />
       </DialogContent>
     </Dialog>
   );

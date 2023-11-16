@@ -20,5 +20,6 @@
     "types": ["vitest/globals"]
   },
   "include": ["src", ".eslintrc.cjs"],
+  "exclude": ["src/stories", "dist", "node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

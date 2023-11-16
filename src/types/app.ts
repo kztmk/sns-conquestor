@@ -9,3 +9,11 @@ export type XAccountData = {
   loginProviderPassword: string;
   remark: string;
 };
+
+export type XAccountListFetchStatus = {
+  xAccountList: XAccountData[];
+  process: 'idle' | 'addNew' | 'update' | 'delete' | 'fetch';
+  isLoading: boolean;
+  isError: boolean;
+  errorMessage: string;
+};

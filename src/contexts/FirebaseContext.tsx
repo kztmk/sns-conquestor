@@ -1,18 +1,19 @@
-import { ReactElement, createContext, useCallback, useEffect, useMemo, useReducer } from 'react';
-
+import { ReactElement, createContext, useCallback, useEffect, useMemo } from 'react';
 // third-party
 import { getAuth, updatePassword } from 'firebase/auth';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 // action - state management
-import authReducer from '../store/reducers/auth';
-import { LOGIN, LOGOUT } from '../store/reducers/authActions';
 
 // project-imports
+import { useSelector } from 'react-redux';
 import Loader from '../components/Loader';
-import { AuthProps, FirebaseContextType } from '../types/auth';
-
+import { RootState, useDispatch } from '../store';
+import { logedout, login } from '../store/reducers/appAuth';
+import { signIn } from '../store/reducers/firebaseAuth';
+import { fetchXAccountList } from '../store/reducers/xAccountSlice';
+import { FirebaseContextType } from '../types/auth';
 // firebase initialize
 if (!firebase.apps.length) {
   firebase.initializeApp({
@@ -26,50 +27,39 @@ if (!firebase.apps.length) {
   });
 }
 
-// const
-const initialState: AuthProps = {
-  isLoggedIn: false,
-  isInitialized: false,
-  user: null,
-};
-
 // ==============================|| FIREBASE CONTEXT & PROVIDER ||============================== //
 
 const FirebaseContext = createContext<FirebaseContextType | null>(null);
 
 export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  // const [state, dispatch] = useReducer(authReducer, initialState);
+  const appAuthState = useSelector((state: RootState) => state.appAuth);
 
+  const dispatch = useDispatch();
   useEffect(
     () =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       firebase.auth().onAuthStateChanged((user: any) => {
         if (user) {
-          dispatch({
-            type: LOGIN,
-            payload: {
-              isLoggedIn: true,
-              user: {
-                id: user.uid,
-                email: user.email!,
-                name: user.displayName || 'Stebin Ben',
-                role: 'UI/UX Designer',
-              },
-            },
-          });
+          const appUser = {
+            id: user.uid,
+            email: user.email!,
+            avatar: user.photoURL,
+            image: user.photoURL,
+            name: user.displayName || '',
+          };
+          dispatch(login(appUser));
+          dispatch(fetchXAccountList());
         } else {
-          dispatch({
-            type: LOGOUT,
-          });
+          dispatch(logedout());
         }
       }),
     [dispatch]
   );
 
   const firebaseEmailPasswordSignIn = useCallback(
-    (email: string, password: string) =>
-      firebase.auth().signInWithEmailAndPassword(email, password),
-    []
+    (email: string, password: string) => dispatch(signIn({ email, password })),
+    [dispatch]
   );
 
   const firebaseGoogleSignIn = useCallback(() => {
@@ -93,7 +83,9 @@ export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
     []
   );
 
-  const logout = useCallback(() => firebase.auth().signOut(), []);
+  const logout = useCallback(async () => {
+    await firebase.auth().signOut();
+  }, []);
 
   const resetPassword = useCallback(async (email: string) => {
     await firebase.auth().sendPasswordResetEmail(email);
@@ -108,7 +100,8 @@ export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
 
   const value = useMemo(
     () => ({
-      ...state,
+      ...appAuthState,
+      logout,
       firebaseRegister,
       firebaseEmailPasswordSignIn,
       login: () => {},
@@ -116,24 +109,23 @@ export const FirebaseProvider = ({ children }: { children: ReactElement }) => {
       firebaseTwitterSignIn,
       firebaseFacebookSignIn,
       firebaseUpdatePassword,
-      logout,
       resetPassword,
       updateProfile,
     }),
     [
-      state,
+      appAuthState,
+      logout,
       firebaseRegister,
       firebaseEmailPasswordSignIn,
       firebaseGoogleSignIn,
       firebaseTwitterSignIn,
       firebaseFacebookSignIn,
       firebaseUpdatePassword,
-      logout,
       resetPassword,
       updateProfile,
     ]
   );
-  if (state.isInitialized !== undefined && !state.isInitialized) {
+  if (appAuthState.isInitialized !== undefined && !appAuthState.isInitialized) {
     return <Loader />;
   }
   return <FirebaseContext.Provider value={value}>{children}</FirebaseContext.Provider>;

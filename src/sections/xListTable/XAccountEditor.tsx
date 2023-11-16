@@ -3,11 +3,32 @@ import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 // material-ui
-import { Autocomplete, Button, Grid, Stack, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Stack,
+  TextField,
+} from '@mui/material';
 
 // assets
 import { useEffect, useState } from 'react';
+import Loader from '../../components/Loader';
 import MainCard from '../../components/MainCard';
+import { useDispatch, useSelector } from '../../store';
+import {
+  addXAccount,
+  resetProcess,
+  selectXAccountList,
+  updateXAccount,
+} from '../../store/reducers/xAccountSlice';
+import { XAccountData } from '../../types/app';
 
 // validation schema
 const schema = z.object({
@@ -51,7 +72,7 @@ const loginProviders = [
 ];
 
 type XAccountEditorProps = {
-  onCanceled: () => void;
+  closeDialog: () => void;
   accountData: XAccoutEditorDataType;
 };
 
@@ -61,7 +82,14 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
     label: 'Google' | 'Apple' | 'メールアドレス' | '電話番号' | 'ユーザー名';
     value: 'Google' | 'Apple' | 'メールアドレス' | '電話番号' | 'ユーザー名';
   }>({ label: 'Google', value: 'Google' });
-  const { onCanceled, accountData } = props;
+
+  // error dialog
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const { closeDialog, accountData } = props;
   const {
     control,
     handleSubmit,
@@ -72,6 +100,9 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
     defaultValues: xAccountDefaultValue,
     resolver: zodResolver(schema),
   });
+
+  const dispatch = useDispatch();
+  const { process, isError, errorMessage, isLoading } = useSelector(selectXAccountList);
 
   useEffect(() => {
     if (accountData.id !== xAccountDefaultValue.id) {
@@ -86,10 +117,57 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
     }
   }, [accountData, setValue]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSubmit = (data: XAccoutEditorDataType) => {
+  const onReset = () => {
     reset(xAccountDefaultValue);
+    setLoginProviderLabel({ label: 'Google', value: 'Google' });
   };
+
+  const onSubmit = async (data: XAccoutEditorDataType) => {
+    console.log(`processing form post ${data}`);
+    const saveData: XAccountData = {
+      id: data.id,
+      userName: data.userName,
+      displayName: data.displayName,
+      loginProvider: data.loginProvider,
+      loginProviderId: data.loginProviderId,
+      loginProviderPassword: data.loginProviderPassword,
+      remark: data.remark,
+    };
+    console.log(`saveData: ${saveData}`);
+    if (saveData.id === xAccountDefaultValue.id) {
+      // 新規追加
+      console.log('addXAccount');
+      await dispatch(addXAccount(saveData));
+    } else {
+      // 更新
+      await dispatch(updateXAccount(saveData));
+    }
+  };
+
+  // dispatch result
+  useEffect(() => {
+    if (!isLoading && isError) {
+      // error
+      setOpenDialog(true);
+    }
+    if (!isLoading && !isError && process === 'addNew') {
+      // success
+      console.log('success');
+      dispatch(resetProcess());
+      closeDialog();
+    }
+    if (!isLoading && !isError && process === 'update') {
+      // update success
+      // show dialog
+      console.log('success');
+      dispatch(resetProcess());
+      closeDialog();
+    }
+  }, [isLoading, isError, errorMessage, closeDialog, process, dispatch]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <MainCard title="Xアカウント新規追加・更新">
@@ -136,7 +214,7 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
                   id="loginProvider"
                   options={loginProviders}
                   getOptionLabel={(option) => option.label}
-                  onChange={(_, data) => onChange(data)}
+                  onChange={(_, data) => onChange(data?.value)}
                   value={loginProviderLabel}
                   renderInput={(params) => (
                     <TextField
@@ -154,7 +232,7 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
           </Grid>
           <Grid item xs={12}>
             <Controller
-              name="userName"
+              name="loginProviderId"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -170,7 +248,7 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
           </Grid>
           <Grid item xs={12}>
             <Controller
-              name="displayName"
+              name="loginProviderPassword"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -203,16 +281,37 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
           </Grid>
           <Grid item xs={12}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
-              <Button variant="contained" type="button" onClick={onCanceled}>
+              <Button variant="contained" type="button" onClick={closeDialog} color="warning">
                 キャンセル
               </Button>
+              <Button variant="contained" type="button" onClick={onReset} color="secondary">
+                リセット
+              </Button>
               <Button variant="contained" type="submit">
-                登録
+                保存
               </Button>
             </Stack>
           </Grid>
         </Grid>
       </form>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <Box sx={{ p: 1, py: 1.5 }}>
+          <DialogTitle id="alert-dialog-title">エラー</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">{errorMessage}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleCloseDialog} autoFocus>
+              Agree
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </MainCard>
   );
 };

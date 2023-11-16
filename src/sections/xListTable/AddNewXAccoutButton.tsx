@@ -8,11 +8,15 @@ interface Props {
 
 const AddNewXAccountButton: React.FC<Props> = ({ onClick }) => {
   return (
-    <Tooltip title="Add new X account">
-      <IconButton onClick={onClick}>
-        <AddSquare size={28} style={{ color: 'gray', marginTop: 4 }} />
-      </IconButton>
-    </Tooltip>
+    <IconButton
+      onClick={onClick}
+      size="large"
+      sx={{ paddingInline: 0, width: '42x', height: '42px', padding: 0 }}
+    >
+      <Tooltip title="Add new X account">
+        <AddSquare size={42} style={{ color: 'gray' }} />
+      </Tooltip>
+    </IconButton>
   );
 };
 
