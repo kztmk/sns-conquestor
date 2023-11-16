@@ -123,7 +123,6 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
   };
 
   const onSubmit = async (data: XAccoutEditorDataType) => {
-    console.log(`processing form post ${data}`);
     const saveData: XAccountData = {
       id: data.id,
       userName: data.userName,
@@ -133,10 +132,8 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
       loginProviderPassword: data.loginProviderPassword,
       remark: data.remark,
     };
-    console.log(`saveData: ${saveData}`);
     if (saveData.id === xAccountDefaultValue.id) {
       // 新規追加
-      console.log('addXAccount');
       await dispatch(addXAccount(saveData));
     } else {
       // 更新
@@ -152,14 +149,12 @@ const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
     }
     if (!isLoading && !isError && process === 'addNew') {
       // success
-      console.log('success');
       dispatch(resetProcess());
       closeDialog();
     }
     if (!isLoading && !isError && process === 'update') {
       // update success
       // show dialog
-      console.log('success');
       dispatch(resetProcess());
       closeDialog();
     }
