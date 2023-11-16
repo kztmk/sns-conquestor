@@ -3,13 +3,36 @@ import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 // material-ui
-import { Autocomplete, Button, Grid, Stack, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Stack,
+  TextField,
+} from '@mui/material';
 
 // assets
+import { useEffect, useState } from 'react';
+import Loader from '../../components/Loader';
 import MainCard from '../../components/MainCard';
+import { useDispatch, useSelector } from '../../store';
+import {
+  addXAccount,
+  resetProcess,
+  selectXAccountList,
+  updateXAccount,
+} from '../../store/reducers/xAccountSlice';
+import { XAccountData } from '../../types/app';
 
 // validation schema
 const schema = z.object({
+  id: z.string(),
   userName: z.string().startsWith('@', { message: 'ユーザー名は@から始まる必要があります' }),
   displayName: z
     .string()
@@ -29,7 +52,8 @@ const schema = z.object({
 
 export type XAccoutEditorDataType = z.infer<typeof schema>;
 
-const defaultValues: XAccoutEditorDataType = {
+export const xAccountDefaultValue: XAccoutEditorDataType = {
+  id: '',
   userName: '',
   displayName: '',
   loginProvider: 'Google',
@@ -47,26 +71,106 @@ const loginProviders = [
   { label: 'ユーザー名', value: 'ユーザー名' },
 ];
 
-const XAccountEditor = () => {
-  // const theme = useTheme();
+type XAccountEditorProps = {
+  closeDialog: () => void;
+  accountData: XAccoutEditorDataType;
+};
 
+const XAccountEditor: React.FC<XAccountEditorProps> = (props) => {
+  // const theme = useTheme();
+  const [loginProviderLabel, setLoginProviderLabel] = useState<{
+    label: 'Google' | 'Apple' | 'メールアドレス' | '電話番号' | 'ユーザー名';
+    value: 'Google' | 'Apple' | 'メールアドレス' | '電話番号' | 'ユーザー名';
+  }>({ label: 'Google', value: 'Google' });
+
+  // error dialog
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const { closeDialog, accountData } = props;
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
-    defaultValues,
+    defaultValues: xAccountDefaultValue,
     resolver: zodResolver(schema),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSubmit = (data: XAccoutEditorDataType) => {
-    reset(defaultValues);
+  const dispatch = useDispatch();
+  const { process, isError, errorMessage, isLoading } = useSelector(selectXAccountList);
+
+  useEffect(() => {
+    if (accountData.id !== xAccountDefaultValue.id) {
+      setValue('id', accountData.id);
+      setValue('userName', accountData.userName);
+      setValue('displayName', accountData.displayName);
+      setValue('loginProvider', accountData.loginProvider);
+      setValue('loginProviderId', accountData.loginProviderId);
+      setValue('loginProviderPassword', accountData.loginProviderPassword);
+      setValue('remark', accountData.remark);
+      setLoginProviderLabel({ label: accountData.loginProvider, value: accountData.loginProvider });
+    }
+  }, [accountData, setValue]);
+
+  const onReset = () => {
+    reset(xAccountDefaultValue);
+    setLoginProviderLabel({ label: 'Google', value: 'Google' });
   };
 
+  const onSubmit = async (data: XAccoutEditorDataType) => {
+    console.log(`processing form post ${data}`);
+    const saveData: XAccountData = {
+      id: data.id,
+      userName: data.userName,
+      displayName: data.displayName,
+      loginProvider: data.loginProvider,
+      loginProviderId: data.loginProviderId,
+      loginProviderPassword: data.loginProviderPassword,
+      remark: data.remark,
+    };
+    console.log(`saveData: ${saveData}`);
+    if (saveData.id === xAccountDefaultValue.id) {
+      // 新規追加
+      console.log('addXAccount');
+      await dispatch(addXAccount(saveData));
+    } else {
+      // 更新
+      await dispatch(updateXAccount(saveData));
+    }
+  };
+
+  // dispatch result
+  useEffect(() => {
+    if (!isLoading && isError) {
+      // error
+      setOpenDialog(true);
+    }
+    if (!isLoading && !isError && process === 'addNew') {
+      // success
+      console.log('success');
+      dispatch(resetProcess());
+      closeDialog();
+    }
+    if (!isLoading && !isError && process === 'update') {
+      // update success
+      // show dialog
+      console.log('success');
+      dispatch(resetProcess());
+      closeDialog();
+    }
+  }, [isLoading, isError, errorMessage, closeDialog, process, dispatch]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
-    <MainCard title="Google Map Autocomplete (Address)">
+    <MainCard title="Xアカウント新規追加・更新">
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3.5}>
           <Grid item xs={12}>
@@ -105,13 +209,13 @@ const XAccountEditor = () => {
             <Controller
               control={control}
               name="loginProvider"
-              defaultValue="Google"
               render={({ field: { ref, onChange, ...field } }) => (
                 <Autocomplete
+                  id="loginProvider"
                   options={loginProviders}
                   getOptionLabel={(option) => option.label}
-                  onChange={(_, data) => onChange(data)}
-                  defaultValue={{ label: 'Google', value: 'Google' }}
+                  onChange={(_, data) => onChange(data?.value)}
+                  value={loginProviderLabel}
                   renderInput={(params) => (
                     <TextField
                       {...field}
@@ -128,7 +232,7 @@ const XAccountEditor = () => {
           </Grid>
           <Grid item xs={12}>
             <Controller
-              name="userName"
+              name="loginProviderId"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -144,7 +248,7 @@ const XAccountEditor = () => {
           </Grid>
           <Grid item xs={12}>
             <Controller
-              name="displayName"
+              name="loginProviderPassword"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -177,13 +281,37 @@ const XAccountEditor = () => {
           </Grid>
           <Grid item xs={12}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
+              <Button variant="contained" type="button" onClick={closeDialog} color="warning">
+                キャンセル
+              </Button>
+              <Button variant="contained" type="button" onClick={onReset} color="secondary">
+                リセット
+              </Button>
               <Button variant="contained" type="submit">
-                登録
+                保存
               </Button>
             </Stack>
           </Grid>
         </Grid>
       </form>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <Box sx={{ p: 1, py: 1.5 }}>
+          <DialogTitle id="alert-dialog-title">エラー</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">{errorMessage}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleCloseDialog} autoFocus>
+              Agree
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </MainCard>
   );
 };

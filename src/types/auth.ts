@@ -35,13 +35,10 @@ export type FirebaseContextType = {
   isLoggedIn: boolean;
   isInitialized?: boolean;
   user?: UserProfile | null | undefined;
-  logout: () => Promise<void>;
   login: () => void;
+  logout: () => Promise<void>;
   firebaseRegister: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
-  firebaseEmailPasswordSignIn: (
-    email: string,
-    password: string
-  ) => Promise<firebase.auth.UserCredential>;
+  firebaseEmailPasswordSignIn: (email: string, password: string) => void;
   firebaseGoogleSignIn: () => Promise<firebase.auth.UserCredential>;
   firebaseTwitterSignIn: () => Promise<firebase.auth.UserCredential>;
   firebaseFacebookSignIn: () => Promise<firebase.auth.UserCredential>;
