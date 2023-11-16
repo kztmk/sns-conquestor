@@ -77,18 +77,7 @@ const AuthLogin = ({ forgot }: { forgot: string }) => {
   // react-hook-form onSubmit
   const onSubmit = async (data: AuthLoginInputs) => {
     try {
-      await firebaseEmailPasswordSignIn(data.email, data.password).then(
-        () => {
-          // WARNING: do not set any formik state here as formik might be already destroyed here. You may get following error by doing so.
-          // Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application.
-          // To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-          // github issue:
-        },
-        (err: any) => {
-          const errorMessage = err.message || 'Unexpected error occured';
-          setFormErrorMessage(errorMessage);
-        }
-      );
+      await firebaseEmailPasswordSignIn(data.email, data.password);
     } catch (err: any) {
       const errorMessage = err.message || 'Unexpected error occured';
       setFormErrorMessage(errorMessage);
