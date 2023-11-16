@@ -49,7 +49,6 @@ export const addXAccount = createAsyncThunk<
   { rejectValue: string; state: RootState }
 >('addXAccount', async (xAccountData, thunkAPI) => {
   try {
-    console.log('process addXAccount thunk');
     const { user } = thunkAPI.getState().appAuth;
     const db = getDatabase();
     const dbRef = ref(db, `userData/${user?.id}/xAccountList`);
@@ -114,19 +113,16 @@ const xAccountListSlice = createSlice({
     // AddXAccount
     builder.addCase(addXAccount.pending, (state) => {
       state.isLoading = true;
-      console.log('process addXAccount pending');
     });
     builder.addCase(addXAccount.fulfilled, (state, { payload }) => {
       state.isLoading = false;
       state.process = 'addNew';
       state.xAccountList.push(payload);
-      console.log('process addXAccount fulfilled');
     });
     builder.addCase(addXAccount.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.errorMessage = payload as string;
-      console.log(`process addXAccount rejected:${payload}}`);
     });
     // UpdateXAccount
     builder.addCase(updateXAccount.pending, (state) => {
